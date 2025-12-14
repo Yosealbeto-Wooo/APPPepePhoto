@@ -168,6 +168,39 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                     Left: Original • Right: Edited
                 </div>
             </div>
+
+            {/* Hidden SVG Filter for Real-time Sharpening */}
+            <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+                <defs>
+                    <filter id="sharpen-filter">
+                        {/* Convolve Matrix for Sharpening. 
+                            k = sharpen / 100.
+                            Kernel: [0, -k, 0, -k, 4k+1, -k, 0, -k, 0]
+                            But SVG convolveMatrix uses integer or float weights.
+                            Let's use a dynamic approach if possible? 
+                            React renders this, so we can inject settings.sharpen.
+                            
+                            Standard matrix:
+                            0 -1  0
+                           -1  5 -1
+                            0 -1  0
+                            Divisor 1. This is strong sharpen.
+                            
+                            We want variable strength.
+                            Base image + HighPass * strength.
+                            Matrix:
+                              0   -k    0
+                             -k  1+4k  -k
+                              0   -k    0
+                        */}
+                        <feConvolveMatrix
+                            order="3"
+                            kernelMatrix={`0 -${settings.sharpen / 100} 0 -${settings.sharpen / 100} ${1 + 4 * (settings.sharpen / 100)} -${settings.sharpen / 100} 0 -${settings.sharpen / 100} 0`}
+                            preserveAlpha="true"
+                        />
+                    </filter>
+                </defs>
+            </svg>
         </div>
     );
 };

@@ -47,6 +47,22 @@ const applyConvolution = (ctx: CanvasRenderingContext2D, width: number, height: 
     ctx.putImageData(imageData, 0, 0);
 };
 
+export const applySharpen = async (ctx: CanvasRenderingContext2D, width: number, height: number, amount: number) => {
+    if (amount <= 0) return;
+    // Simple kernel:
+    // [0, -k, 0]
+    // [-k, 4k+1, -k]
+    // [0, -k, 0]
+    // amount 0-100 -> k 0-1 roughly
+    const k = amount / 100;
+    const kernel = [
+        0, -k, 0,
+        -k, 4 * k + 1, -k,
+        0, -k, 0
+    ];
+    applyConvolution(ctx, width, height, kernel);
+};
+
 export const improveImageQuality = async (imageSrc: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -180,7 +196,11 @@ export const applyRedEyeCorrection = async (imageSrc: string, x: number, y: numb
  * Generates a CSS filter string from the settings object.
  */
 export const getFilterString = (settings: FilterSettings): string => {
-    return `brightness(${settings.brightness}%) contrast(${settings.contrast}%) saturate(${settings.saturation}%) grayscale(${settings.grayscale}%) sepia(${settings.sepia}%) blur(${settings.blur}px) hue-rotate(${settings.hueRotate}deg)`;
+    let filter = `brightness(${settings.brightness}%) contrast(${settings.contrast}%) saturate(${settings.saturation}%) grayscale(${settings.grayscale}%) sepia(${settings.sepia}%) blur(${settings.blur}px) hue-rotate(${settings.hueRotate}deg)`;
+    if (settings.sharpen > 0) {
+        filter += ` url(#sharpen-filter)`;
+    }
+    return filter;
 };
 
 /**
@@ -324,6 +344,22 @@ export const processImage = async (
             ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
             ctx.restore();
+
+            // Apply sharpen if needed (must be done after filters drawn? No, filters are CSS ctx.filter).
+            // Context filter applies to drawImage.
+            // But Sharpen is custom convolution. We can't apply it easily unless we GetImageData.
+            // However, SVG filter is part of ctx.filter in modern browsers? 
+            // ctx.filter = 'url(#id)' works if id is in DOM.
+            // But for offline process/file generation, relying on DOM element reference is risky or might not work in some conditions.
+            // Safer to Manual Convolve if sharpen > 0.
+            // BUT: we just drew with CSS filters (brightness etc). 
+            // We need to GetImageData -> Convolve -> PutImageData.
+            // This is heavy but correct for download.
+
+            if (settings.sharpen > 0) {
+                applySharpen(ctx, canvas.width, canvas.height, settings.sharpen);
+            }
+
             resolve(canvas.toDataURL('image/png'));
         };
         img.onerror = (err) => reject(err);

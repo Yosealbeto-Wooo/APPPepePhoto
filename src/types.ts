@@ -8,6 +8,7 @@ export interface FilterSettings {
   hueRotate: number; // 0
   rotate: number; // 0 (degrees)
   scale: number; // 1 (100%)
+  sharpen: number; // 0-100 (Amount)
 }
 
 export interface ImageDimensions {
@@ -35,4 +36,5 @@ export const DEFAULT_SETTINGS: FilterSettings = {
   hueRotate: 0,
   rotate: 0,
   scale: 1,
+  sharpen: 0,
 };

@@ -50,25 +50,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
     const stickers = ["😀", "😎", "😍", "🥳", "🤔", "🤬", "💩", "🤡", "👻", "👽", "🤖", "🎃", "👍", "👎", "❤️", "🔥", "✨", "🎉"];
 
-    const renderSlider = (
-        label: string,
-        value: number,
-        min: number,
-        max: number,
-        key: keyof FilterSettings,
-        unit: string = ''
-    ) => (
+    const renderSlider = (label: string, value: number, min: number, max: number, onChange: (val: number) => void, unit: string = '') => (
         <div style={{ marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem', fontSize: '0.875rem' }}>
-                <span>{label}</span>
-                <span style={{ color: 'var(--text-secondary)' }}>{value}{unit}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 500 }}>{label}</label>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{Math.round(value)}{unit}</span>
             </div>
             <input
                 type="range"
                 min={min}
                 max={max}
                 value={value}
-                onChange={(e) => updateSettings({ [key]: Number(e.target.value) })}
+                onChange={(e) => onChange(Number(e.target.value))}
+                style={{ width: '100%', accentColor: 'var(--primary)' }}
             />
         </div>
     );
@@ -156,20 +150,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 {activeTab === 'adjust' && (
                     <div>
                         <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>BASIC ADJUSTMENTS</h3>
-                        {renderSlider('Brightness', settings.brightness, 0, 200, 'brightness', '%')}
-                        {renderSlider('Contrast', settings.contrast, 0, 200, 'contrast', '%')}
-                        {renderSlider('Saturation', settings.saturation, 0, 200, 'saturation', '%')}
-                        {renderSlider('Sepia', settings.sepia, 0, 100, 'sepia', '%')}
-                        {renderSlider('Blur', settings.blur, 0, 20, 'blur', 'px')}
-                        {renderSlider('Hue Rotate', settings.hueRotate, 0, 360, 'hueRotate', 'deg')}
+                        {renderSlider('Brightness', settings.brightness, 0, 200, (v) => updateSettings({ brightness: v }), '%')}
+                        {renderSlider('Contrast', settings.contrast, 0, 200, (v) => updateSettings({ contrast: v }), '%')}
+                        {renderSlider('Saturation', settings.saturation, 0, 200, (v) => updateSettings({ saturation: v }), '%')}
+                        {renderSlider('Sharpen', settings.sharpen, 0, 100, (v) => updateSettings({ sharpen: v }), '%')}
+                        {renderSlider('Sepia', settings.sepia, 0, 100, (v) => updateSettings({ sepia: v }), '%')}
+                        {renderSlider('Blur', settings.blur, 0, 20, (v) => updateSettings({ blur: v }), 'px')}
+                        {renderSlider('Hue Rotate', settings.hueRotate, 0, 360, (v) => updateSettings({ hueRotate: v }), 'deg')}
                     </div>
                 )}
 
                 {activeTab === 'transform' && (
                     <div>
                         <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>TRANSFORM</h3>
-                        {renderSlider('Rotate', settings.rotate, 0, 360, 'rotate', 'deg')}
-                        {renderSlider('Scale', settings.scale, 0.5, 2, 'scale', 'x')}
+                        {renderSlider('Rotate', settings.rotate, 0, 360, (v) => updateSettings({ rotate: v }), 'deg')}
+                        {renderSlider('Scale', settings.scale, 0.5, 2, (v) => updateSettings({ scale: v }), 'x')}
                     </div>
                 )}
 
