@@ -15,6 +15,7 @@ function App() {
     applyTextFilter,
     handleRemoveBackground,
     handleImproveQuality,
+    handleUpscale,
     handleRedEyeCorrection,
     handleCloneStamp,
     handleCrop,
@@ -86,7 +87,7 @@ function App() {
         if (cloneSource) {
           handleCloneStamp(x, y, cloneSource.x, cloneSource.y);
         } else {
-          alert('Please set a source point first by clicking "Set Source Point"');
+          alert('Por favor define un punto de origen primero haciendo clic en "Definir Punto de Origen"');
           setIsSettingSource(true);
         }
       }
@@ -105,7 +106,7 @@ function App() {
       link.click();
     } catch (e) {
       console.error('Download failed', e);
-      alert('Failed to generate download image');
+      alert('Error al generar la imagen para descargar');
     }
   };
 
@@ -129,6 +130,7 @@ function App() {
           onTextFilter={applyTextFilter}
           onRemoveBackground={handleRemoveBackground}
           onImproveQuality={handleImproveQuality}
+          onUpscale={handleUpscale}
           isProcessing={isProcessing}
           onActiveTabChange={setActiveTab}
           isSettingSource={isSettingSource}

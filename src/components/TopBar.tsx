@@ -47,26 +47,26 @@ export const TopBar: React.FC<TopBarProps> = ({
                     onChange={handleFileChange}
                 />
                 <button className="btn-primary" onClick={() => fileInputRef.current?.click()}>
-                    <Upload size={18} style={{ marginRight: '0.5rem' }} /> Upload
+                    <Upload size={18} style={{ marginRight: '0.5rem' }} /> Subir
                 </button>
 
                 <div style={{ width: '1px', height: '24px', background: 'var(--border-color)', margin: '0 0.5rem' }} />
 
-                <button className="btn-icon" onClick={onUndo} disabled={!canUndo} style={{ opacity: canUndo ? 1 : 0.5 }}>
+                <button className="btn-icon" onClick={onUndo} disabled={!canUndo} style={{ opacity: canUndo ? 1 : 0.5 }} title="Deshacer">
                     <Undo size={20} />
                 </button>
-                <button className="btn-icon" onClick={onRedo} disabled={!canRedo} style={{ opacity: canRedo ? 1 : 0.5 }}>
+                <button className="btn-icon" onClick={onRedo} disabled={!canRedo} style={{ opacity: canRedo ? 1 : 0.5 }} title="Rehacer">
                     <Redo size={20} />
                 </button>
 
                 <div style={{ width: '1px', height: '24px', background: 'var(--border-color)', margin: '0 0.5rem' }} />
 
-                <button className="btn-icon" onClick={onDownload} disabled={isProcessing}>
+                <button className="btn-icon" onClick={onDownload} disabled={isProcessing} title="Descargar">
                     <Download size={20} />
                 </button>
 
                 {/* Placeholder Share button - sharing usually requires Web Share API or backend */}
-                <button className="btn-icon" onClick={() => alert('Sharing not implemented yet (requires HTTPS/Mobile)')}>
+                <button className="btn-icon" onClick={() => alert('Compartir no implementado todavía (requiere HTTPS/Móvil)')} title="Compartir">
                     <Share2 size={20} />
                 </button>
             </div>

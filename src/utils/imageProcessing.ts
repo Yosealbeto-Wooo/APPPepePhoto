@@ -75,7 +75,7 @@ export const improveImageQuality = async (imageSrc: string): Promise<string> => 
 
             ctx.drawImage(img, 0, 0);
 
-            // Sharpen kernel
+            // Sharpen kernel - A bit more aggressive for "Improve Quality"
             const kernel = [
                 0, -1, 0,
                 -1, 5, -1,
@@ -84,6 +84,42 @@ export const improveImageQuality = async (imageSrc: string): Promise<string> => 
             applyConvolution(ctx, canvas.width, canvas.height, kernel);
 
             resolve(canvas.toDataURL());
+        };
+        img.onerror = reject;
+        img.src = imageSrc;
+    });
+};
+
+export const upscaleImage = async (imageSrc: string, targetWidth: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            // Calculate new height to maintain aspect ratio
+            const aspectRatio = img.height / img.width;
+            const targetHeight = Math.round(targetWidth * aspectRatio);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { reject(new Error('No context')); return; }
+
+            // High quality smoothing
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+            // Apply mild sharpening after upscaling to restore crispness
+            const kernel = [
+                0, -0.5, 0,
+                -0.5, 3, -0.5,
+                0, -0.5, 0
+            ];
+            applyConvolution(ctx, canvas.width, canvas.height, kernel);
+
+            resolve(canvas.toDataURL('image/png', 0.9)); // High quality JPEG/PNG
         };
         img.onerror = reject;
         img.src = imageSrc;

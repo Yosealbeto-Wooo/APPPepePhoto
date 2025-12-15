@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { type EditorState, type FilterSettings, DEFAULT_SETTINGS } from '../types';
-import { removeImageBackground, improveImageQuality, textToFilterSettings, applyRedEyeCorrection, applyCloneStamp, cropImage, applyStickers } from '../utils/imageProcessing';
+import { removeImageBackground, improveImageQuality, textToFilterSettings, applyRedEyeCorrection, applyCloneStamp, cropImage, applyStickers, upscaleImage } from '../utils/imageProcessing';
 
 export const useImageEditor = () => {
     const [state, setState] = useState<EditorState>({
@@ -77,7 +77,7 @@ export const useImageEditor = () => {
             setState(prev => ({ ...prev, originalImage: newSrc }));
         } catch (e) {
             console.error(e);
-            alert('Failed to remove background');
+            alert('Error al eliminar el fondo');
         }
         setIsProcessing(false);
     }, [state.currentImage, pushHistory]);
@@ -91,7 +91,21 @@ export const useImageEditor = () => {
             setState(prev => ({ ...prev, originalImage: newSrc }));
         } catch (e) {
             console.error(e);
-            alert('Failed to improve quality');
+            alert('Error al mejorar la calidad');
+        }
+        setIsProcessing(false);
+    }, [state.currentImage, pushHistory]);
+
+    const handleUpscale = useCallback(async (targetWidth: number) => {
+        if (!state.currentImage) return;
+        setIsProcessing(true);
+        try {
+            const newSrc = await upscaleImage(state.currentImage, targetWidth);
+            pushHistory(newSrc);
+            setState(prev => ({ ...prev, originalImage: newSrc }));
+        } catch (e) {
+            console.error(e);
+            alert('Error al escalar la imagen');
         }
         setIsProcessing(false);
     }, [state.currentImage, pushHistory]);
@@ -214,6 +228,7 @@ export const useImageEditor = () => {
         applyTextFilter,
         handleRemoveBackground,
         handleImproveQuality,
+        handleUpscale,
         handleRedEyeCorrection,
         handleCloneStamp,
         handleCrop,

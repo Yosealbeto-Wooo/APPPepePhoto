@@ -8,6 +8,7 @@ interface ToolbarProps {
     onTextFilter: (text: string) => void;
     onRemoveBackground: () => void;
     onImproveQuality: () => void;
+    onUpscale: (width: number) => void;
     isProcessing: boolean;
     onActiveTabChange?: (tab: string) => void;
     // Clone Stamp Props
@@ -29,6 +30,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     onTextFilter,
     onRemoveBackground,
     onImproveQuality,
+    onUpscale,
     isProcessing,
     onActiveTabChange,
     isSettingSource,
@@ -74,6 +76,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'adjust' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'adjust' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('adjust')}
+                    title="Ajustes Básicos"
                 >
                     <Sliders size={20} />
                 </button>
@@ -81,6 +84,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'ai' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'ai' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('ai')}
+                    title="Herramientas IA"
                 >
                     <Wand2 size={20} />
                 </button>
@@ -88,6 +92,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'transform' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'transform' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('transform')}
+                    title="Transformar"
                 >
                     <RotateCw size={20} />
                 </button>
@@ -95,6 +100,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'retouch' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'retouch' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('retouch')}
+                    title="Retoque"
                 >
                     <EyeOff size={20} />
                 </button>
@@ -102,6 +108,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'eraser' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'eraser' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('eraser')}
+                    title="Borrador Mágico"
                 >
                     <Eraser size={20} />
                 </button>
@@ -109,6 +116,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'crop' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'crop' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('crop')}
+                    title="Recortar"
                 >
                     <Crop size={20} />
                 </button>
@@ -116,6 +124,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     className={`btn-icon ${activeTab === 'stickers' ? 'active' : ''}`}
                     style={{ flex: 1, borderRadius: 0, borderBottom: activeTab === 'stickers' ? '2px solid var(--primary-color)' : 'none' }}
                     onClick={() => handleTabChange('stickers')}
+                    title="Stickers"
                 >
                     <Smile size={20} />
                 </button>
@@ -138,45 +147,45 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                         </div>
                         {hasStickers && (
                             <button className="btn-primary" style={{ width: '100%' }} onClick={onApplyStickers}>
-                                Apply Stickers
+                                Aplicar Stickers
                             </button>
                         )}
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                            Click to add. Drag to move on image. Apply to bake them in.
+                            Haz clic para agregar. Arrastra para mover en la imagen. Aplica para fijarlos.
                         </p>
                     </div>
                 )}
 
                 {activeTab === 'adjust' && (
                     <div>
-                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>BASIC ADJUSTMENTS</h3>
-                        {renderSlider('Brightness', settings.brightness, 0, 200, (v) => updateSettings({ brightness: v }), '%')}
-                        {renderSlider('Contrast', settings.contrast, 0, 200, (v) => updateSettings({ contrast: v }), '%')}
-                        {renderSlider('Saturation', settings.saturation, 0, 200, (v) => updateSettings({ saturation: v }), '%')}
-                        {renderSlider('Sharpen', settings.sharpen, 0, 100, (v) => updateSettings({ sharpen: v }), '%')}
+                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>AJUSTES BÁSICOS</h3>
+                        {renderSlider('Brillo', settings.brightness, 0, 200, (v) => updateSettings({ brightness: v }), '%')}
+                        {renderSlider('Contraste', settings.contrast, 0, 200, (v) => updateSettings({ contrast: v }), '%')}
+                        {renderSlider('Saturación', settings.saturation, 0, 200, (v) => updateSettings({ saturation: v }), '%')}
+                        {renderSlider('Nitidez', settings.sharpen, 0, 100, (v) => updateSettings({ sharpen: v }), '%')}
                         {renderSlider('Sepia', settings.sepia, 0, 100, (v) => updateSettings({ sepia: v }), '%')}
-                        {renderSlider('Blur', settings.blur, 0, 20, (v) => updateSettings({ blur: v }), 'px')}
-                        {renderSlider('Hue Rotate', settings.hueRotate, 0, 360, (v) => updateSettings({ hueRotate: v }), 'deg')}
+                        {renderSlider('Desenfoque', settings.blur, 0, 20, (v) => updateSettings({ blur: v }), 'px')}
+                        {renderSlider('Matiz', settings.hueRotate, 0, 360, (v) => updateSettings({ hueRotate: v }), 'deg')}
                     </div>
                 )}
 
                 {activeTab === 'transform' && (
                     <div>
-                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>TRANSFORM</h3>
-                        {renderSlider('Rotate', settings.rotate, 0, 360, (v) => updateSettings({ rotate: v }), 'deg')}
-                        {renderSlider('Scale', settings.scale, 0.5, 2, (v) => updateSettings({ scale: v }), 'x')}
+                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>TRANSFORMAR</h3>
+                        {renderSlider('Rotar', settings.rotate, 0, 360, (v) => updateSettings({ rotate: v }), 'deg')}
+                        {renderSlider('Escala', settings.scale, 0.5, 2, (v) => updateSettings({ scale: v }), 'x')}
                     </div>
                 )}
 
                 {activeTab === 'retouch' && (
                     <div>
-                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>RETOUCH</h3>
+                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>RETOQUE</h3>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                            Click on red eyes in the image to correct them.
+                            Haz clic en los ojos rojos de la imagen para corregirlos.
                         </p>
                         <div style={{ padding: '0.5rem', background: 'var(--surface-color)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--primary-color)' }}>
                             <span style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <EyeOff size={16} /> Red Eye Tool Active
+                                <EyeOff size={16} /> Corrector de Ojos Rojos Activo
                             </span>
                         </div>
                     </div>
@@ -184,9 +193,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                 {activeTab === 'eraser' && (
                     <div>
-                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>MAGIC ERASER</h3>
+                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>BORRADOR MÁGICO</h3>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                            Clone Stamp: Pick a source area and paint over unwanted objects.
+                            Tampón de Clonar: Elige un área de origen y pinta sobre objetos no deseados.
                         </p>
 
                         <button
@@ -199,13 +208,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                             onClick={onToggleSetSource}
                         >
                             <MousePointer2 size={16} style={{ marginRight: '0.5rem' }} />
-                            {isSettingSource ? 'Tap a source point...' : 'Set Source Point'}
+                            {isSettingSource ? 'Toca un punto de origen...' : 'Definir Punto de Origen'}
                         </button>
 
                         <div style={{ padding: '0.5rem', background: 'var(--surface-color)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--primary-color)' }}>
                             <span style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 {hasCloneSource ? <Eraser size={16} /> : <MousePointer2 size={16} />}
-                                {hasCloneSource ? 'Ready to Erase (Tap object)' : 'Source not set'}
+                                {hasCloneSource ? 'Listo para borrar (Toca objeto)' : 'Origen no definido'}
                             </span>
                         </div>
                     </div>
@@ -213,13 +222,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                 {activeTab === 'crop' && (
                     <div>
-                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>CROP</h3>
+                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0, marginBottom: '1rem' }}>RECORTAR</h3>
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                            Drag on the image to select crop area.
+                            Arrastra sobre la imagen para seleccionar el área de recorte.
                         </p>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <button className="btn-primary" style={{ flex: 1 }} onClick={onApplyCrop}>Apply</button>
-                            <button className="btn-secondary" style={{ flex: 1 }} onClick={onCancelCrop}>Cancel</button>
+                            <button className="btn-primary" style={{ flex: 1 }} onClick={onApplyCrop}>Aplicar</button>
+                            <button className="btn-secondary" style={{ flex: 1 }} onClick={onCancelCrop}>Cancelar</button>
                         </div>
                     </div>
                 )}
@@ -227,13 +236,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 {activeTab === 'ai' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div>
-                            <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0 }}>TEXT FILTER</h3>
+                            <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0 }}>FILTRO DE TEXTO</h3>
                             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                                 <input
                                     type="text"
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
-                                    placeholder="e.g. warm sunset"
+                                    placeholder="ej. atardecer cálido"
                                     style={{
                                         flex: 1,
                                         background: 'var(--surface-color)',
@@ -256,7 +265,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
                         <div style={{ height: '1px', background: 'var(--border-color)' }} />
 
-                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0 }}>TOOLS</h3>
+                        <h3 style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: 0 }}>HERRAMIENTAS</h3>
 
                         <button
                             className="btn-primary"
@@ -264,7 +273,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                             disabled={isProcessing}
                             style={{ width: '100%', position: 'relative' }}
                         >
-                            {isProcessing ? 'Processing...' : 'Remove Background'}
+                            {isProcessing ? 'Procesando...' : 'Remover Fondo'}
                         </button>
 
                         <button
@@ -273,11 +282,30 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                             disabled={isProcessing}
                             style={{ width: '100%' }}
                         >
-                            {isProcessing ? 'Processing...' : 'Improve Quality'}
+                            {isProcessing ? 'Procesando...' : 'Mejorar Nitidez'}
                         </button>
 
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => onUpscale(2048)}
+                                disabled={isProcessing}
+                                style={{ flex: 1 }}
+                            >
+                                {isProcessing ? '...' : 'Mejorar a 2K'}
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => onUpscale(3840)}
+                                disabled={isProcessing}
+                                style={{ flex: 1 }}
+                            >
+                                {isProcessing ? '...' : 'Mejorar a 4K'}
+                            </button>
+                        </div>
+
                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            Note: Processing actions are irreversible and added to history.
+                            Nota: Las acciones de procesamiento son irreversibles y se añaden al historial.
                         </p>
                     </div>
                 )}

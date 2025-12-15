@@ -69,8 +69,8 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
         return (
             <div className="glass-panel flex-center" style={{ flex: 1, height: '100%', color: 'var(--text-secondary)' }}>
                 <div style={{ textAlign: 'center' }}>
-                    <p>No image loaded</p>
-                    <p style={{ fontSize: '0.8rem' }}>Upload an image to start editing</p>
+                    <p>No hay imagen cargada</p>
+                    <p style={{ fontSize: '0.8rem' }}>Sube una imagen para comenzar a editar</p>
                 </div>
             </div>
         );
@@ -88,7 +88,7 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                     onChange={(c) => onCropChange && onCropChange(c as any, c as any)}
                     aspect={undefined}
                 >
-                    <img ref={imgRef} src={imageSrc} style={{ maxWidth: '80vw', maxHeight: '80vh' }} alt="Crop Source" />
+                    <img ref={imgRef} src={imageSrc} style={{ maxWidth: '80vw', maxHeight: '80vh' }} alt="Recortar Imagen" />
                 </ReactCrop>
             </div>
         );
@@ -108,7 +108,7 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                     style={{ position: 'relative', maxWidth: '100%', maxHeight: '100%', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)', cursor: isInteractive ? 'crosshair' : 'default', filter: filterString, transform: transformString, transformOrigin: 'center' }}
                     onClick={handleImageClick}
                 >
-                    <img src={imageSrc} style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', pointerEvents: 'none' }} alt="Editing" />
+                    <img src={imageSrc} style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', pointerEvents: 'none' }} alt="Editando" />
                     {/* Render Stickers Layer */}
                     {stickers && stickers.map(s => (
                         <div
@@ -125,7 +125,7 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                             }}
                             onMouseDown={(e) => handleStickerMouseDown(e, s.id)}
                             onDoubleClick={(e) => { e.stopPropagation(); onRemoveSticker && onRemoveSticker(s.id); }}
-                            title="Double click to remove"
+                            title="Doble clic para eliminar"
                         >
                             {s.content}
                         </div>
@@ -133,7 +133,7 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                 </div>
                 {isInteractive && (
                     <div style={{ position: 'absolute', top: '2rem', background: 'rgba(0,0,0,0.7)', padding: '0.5rem', borderRadius: '0.5rem', pointerEvents: 'none', zIndex: 20 }}>
-                        Tap image to interact
+                        Toca la imagen para interactuar
                     </div>
                 )}
             </div>
@@ -149,7 +149,7 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                     }
                     itemTwo={
                         <div style={{ filter: filterString, transform: transformString, transformOrigin: 'center' }}>
-                            <img src={imageSrc} style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }} alt="After" />
+                            <img src={imageSrc} style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }} alt="Después" />
                         </div>
                     }
                     style={{ width: '100%', height: '100%' }} // Fit to container
@@ -165,7 +165,7 @@ export const CanvasWorkspace: React.FC<CanvasWorkspaceProps> = ({
                     fontSize: '0.75rem',
                     pointerEvents: 'none'
                 }}>
-                    Left: Original • Right: Edited
+                    Izq: Original • Der: Editado
                 </div>
             </div>
 
