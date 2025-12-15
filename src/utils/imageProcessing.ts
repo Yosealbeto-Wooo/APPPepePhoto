@@ -1,8 +1,7 @@
 import { removeBackground } from '@imgly/background-removal';
-// import * as Upscaler from 'upscalerjs'; // Build failed
 import { type FilterSettings, DEFAULT_SETTINGS } from '../types';
 
-// const upscaler = new (Upscaler.default || Upscaler)();
+let upscalerInstance: any = null;
 
 export const removeImageBackground = async (imageSrc: string): Promise<string> => {
     const blob = await (await fetch(imageSrc)).blob();
@@ -91,39 +90,74 @@ export const improveImageQuality = async (imageSrc: string): Promise<string> => 
 };
 
 export const upscaleImage = async (imageSrc: string, targetWidth: number): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-            // Calculate new height to maintain aspect ratio
-            const aspectRatio = img.height / img.width;
-            const targetHeight = Math.round(targetWidth * aspectRatio);
+    try {
+        if (!upscalerInstance) {
+            if (window.Upscaler) {
+                upscalerInstance = new window.Upscaler();
+            } else {
+                throw new Error("UpscalerJS not loaded yet. Please wait a moment.");
+            }
+        }
 
-            const canvas = document.createElement('canvas');
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) { reject(new Error('No context')); return; }
+        // UpscalerJS typically upscales by 2x.
+        // We will run the upscaler.
+        const upscaledSrc = await upscalerInstance.execute(imageSrc);
 
-            // High quality smoothing
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+        // Use regular canvas to resize to exact target width if needed
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                // If the upscaled image is smaller than target (e.g. 2x wasn't enough for 4K), 
+                // we might need to upscale again or just stretch.
+                // For MVP, let's accept the AI 2x/4x result and then fit to target.
 
-            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                const aspectRatio = img.height / img.width;
+                const targetHeight = Math.round(targetWidth * aspectRatio);
 
-            // Apply mild sharpening after upscaling to restore crispness
-            const kernel = [
-                0, -0.5, 0,
-                -0.5, 3, -0.5,
-                0, -0.5, 0
-            ];
-            applyConvolution(ctx, canvas.width, canvas.height, kernel);
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('No context')); return; }
 
-            resolve(canvas.toDataURL('image/png', 0.9)); // High quality JPEG/PNG
-        };
-        img.onerror = reject;
-        img.src = imageSrc;
-    });
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                // Little bit of sharpening to finish off
+                const kernel = [
+                    0, -0.2, 0,
+                    -0.2, 1.8, -0.2,
+                    0, -0.2, 0
+                ];
+                applyConvolution(ctx, canvas.width, canvas.height, kernel);
+
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = reject;
+            img.src = upscaledSrc;
+        });
+
+    } catch (err) {
+        console.error("AI Upscale failed, falling back to canvas", err);
+        // Fallback to old canvas method
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const aspectRatio = img.height / img.width;
+                const targetHeight = Math.round(targetWidth * aspectRatio);
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('No context')); return; }
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = reject;
+            img.src = imageSrc;
+        });
+    }
 };
 
 // Clone Stamp Application

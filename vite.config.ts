@@ -35,4 +35,10 @@ export default defineConfig({
       }
     })
   ],
+  optimizeDeps: {
+    exclude: ['upscalerjs']
+  },
+  build: {
+    chunkSizeWarningLimit: 1000 // UpscalerJS/TFJS are large
+  }
 })
